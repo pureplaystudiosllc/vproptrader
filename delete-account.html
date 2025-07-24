@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Deletion Request - VpropTrader</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -135,31 +136,17 @@
 
         async function encryptEmail(email) {
             try {
-                // Convert key to ArrayBuffer
-                const keyBuffer = new TextEncoder().encode(aesKey.padEnd(32, '\0').slice(0, 32));
+                // Ensure key is 32 bytes (256 bits) for AES-256
+                const key = aesKey.padEnd(32, '\0').slice(0, 32);
                 
-                // Import key for AES-ECB
-                const cryptoKey = await crypto.subtle.importKey(
-                    'raw',
-                    keyBuffer,
-                    { name: 'AES-ECB' },
-                    false,
-                    ['encrypt']
-                );
-
-                // Encode email to ArrayBuffer
-                const encodedEmail = new TextEncoder().encode(email);
+                // Encrypt using CryptoJS with ECB mode
+                const encrypted = CryptoJS.AES.encrypt(email, key, {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                });
                 
-                // Encrypt
-                const encrypted = await crypto.subtle.encrypt(
-                    { name: 'AES-ECB' },
-                    cryptoKey,
-                    encodedEmail
-                );
-
                 // Convert to base64
-                const encryptedArray = new Uint8Array(encrypted);
-                const base64 = btoa(String.fromCharCode(...encryptedArray));
+                const base64 = encrypted.toString();
                 return base64;
             } catch (error) {
                 console.error('Encryption error:', error);
