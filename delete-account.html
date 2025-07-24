@@ -37,9 +37,14 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            position: relative;
         }
-        button:hover {
+        button:hover:not(:disabled) {
             background-color: #b71c1c;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
         }
         #response-message, #otp-message {
             margin-top: 20px;
@@ -72,6 +77,26 @@
         a:hover {
             text-decoration: underline;
         }
+        .loading {
+            display: none;
+            margin-top: 10px;
+            color: #555;
+            font-style: italic;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-top: 2px solid #d32f2f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -87,7 +112,8 @@
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="e.g., support@vproptrader.com" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
         </div>
-        <button type="submit">Send Verification Code</button>
+        <button type="submit" id="otp-button">Send Verification Code</button>
+        <div class="loading" id="otp-loading"><span class="spinner"></span> Sending verification code...</div>
     </form>
     
     <div id="otp-message"></div>
@@ -97,7 +123,8 @@
             <label for="otp">Verification Code</label>
             <input type="text" id="otp" name="otp" placeholder="Enter the OTP sent to your email" required minlength="4" maxlength="6" pattern="[0-9]+" title="OTP must be a numeric code">
         </div>
-        <button type="submit">Submit Deletion Request</button>
+        <button type="submit" id="delete-button">Submit Deletion Request</button>
+        <div class="loading" id="delete-loading"><span class="spinner"></span> Processing deletion request...</div>
     </form>
     
     <div id="response-message"></div>
@@ -108,6 +135,13 @@
             event.preventDefault();
             userEmail = document.getElementById('email').value;
             const otpMessage = document.getElementById('otp-message');
+            const otpButton = document.getElementById('otp-button');
+            const otpLoading = document.getElementById('otp-loading');
+            
+            // Show loading and disable button
+            otpButton.disabled = true;
+            otpLoading.style.display = 'block';
+            otpMessage.style.display = 'none';
             
             try {
                 const response = await fetch('https://vproptrader.com/vebson/user/sendEmailOtpV3', {
@@ -139,9 +173,12 @@
             } catch (error) {
                 otpMessage.className = 'error';
                 otpMessage.textContent = 'Error: Unable to connect to the server. Please try again later.';
+            } finally {
+                // Hide loading and re-enable button
+                otpButton.disabled = false;
+                otpLoading.style.display = 'none';
+                otpMessage.style.display = 'block';
             }
-            
-            otpMessage.style.display = 'block';
         });
 
         document.getElementById('delete-form').addEventListener('submit', async function(event) {
@@ -149,6 +186,13 @@
             
             const otp = document.getElementById('otp').value;
             const responseMessage = document.getElementById('response-message');
+            const deleteButton = document.getElementById('delete-button');
+            const deleteLoading = document.getElementById('delete-loading');
+            
+            // Show loading and disable button
+            deleteButton.disabled = true;
+            deleteLoading.style.display = 'block';
+            responseMessage.style.display = 'none';
             
             try {
                 const response = await fetch('https://vproptrader.com/vebson/user/disableUser', {
@@ -174,8 +218,12 @@
             } catch (error) {
                 responseMessage.className = 'error';
                 responseMessage.textContent = 'Error: Unable to connect to the server. Please try again later.';
+            } finally {
+                // Hide loading and re-enable button
+                deleteButton.disabled = false;
+                deleteLoading.style.display = 'none';
+                responseMessage.style.display = 'block';
             }
-            responseMessage.style.display = 'block';
         });
     </script>
 </body>
