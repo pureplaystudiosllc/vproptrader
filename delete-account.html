@@ -132,20 +132,17 @@
     <script>
         // AES key (provided)
         const aesKey = 'u11DwJXjLLOvf4FgawheRw11Mx6GHbTx';
-        // Placeholder IV (replace with actual 16-byte IV if provided by server)
-        const aesIV = crypto.getRandomValues(new Uint8Array(16)); // Random 16-byte IV
 
         async function encryptEmail(email) {
             try {
-                // Convert key and IV to ArrayBuffer
+                // Convert key to ArrayBuffer
                 const keyBuffer = new TextEncoder().encode(aesKey.padEnd(32, '\0').slice(0, 32));
-                const ivBuffer = aesIV;
                 
-                // Import key for AES-CBC
+                // Import key for AES-ECB
                 const cryptoKey = await crypto.subtle.importKey(
                     'raw',
                     keyBuffer,
-                    { name: 'AES-CBC' },
+                    { name: 'AES-ECB' },
                     false,
                     ['encrypt']
                 );
@@ -155,7 +152,7 @@
                 
                 // Encrypt
                 const encrypted = await crypto.subtle.encrypt(
-                    { name: 'AES-CBC', iv: ivBuffer },
+                    { name: 'AES-ECB' },
                     cryptoKey,
                     encodedEmail
                 );
