@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VpropTrader Deep Link 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 8px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .config {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 VpropTrader Deep Link 测试</h1>
+        
+        <div class="info">
+            <h3>当前配置信息：</h3>
+            <div class="config">
+                <strong>HTTPS Scheme:</strong> https://vprop.vproptrader.app<br>
+                <strong>Custom Scheme:</strong> vproptrader://<br>
+                <strong>Package Name:</strong> com.proptr.proptrader.android<br>
+                <strong>Play Store URL:</strong> https://play.google.com/store/apps/details?id=com.proptr.proptrader.android
+            </div>
+        </div>
+        
+        <h3>测试按钮：</h3>
+        <button class="btn" onclick="testBasic()">基础跳转</button>
+        <button class="btn" onclick="testTicker()">打开行情</button>
+        <button class="btn" onclick="testCalculator()">打开计算器</button>
+        <button class="btn" onclick="testSimulator()">打开模拟器</button>
+        
+        <h3>自动处理按钮：</h3>
+        <button class="btn" data-deep-link>打开应用</button>
+        <button class="btn" data-deep-link data-deep-link-path="/ticker">打开行情</button>
+        <button class="btn" data-deep-link data-deep-link-path="/calculator" data-deep-link-query="type=profit">打开计算器</button>
+        
+        <div class="info">
+            <h4>测试说明：</h4>
+            <ul>
+                <li>如果应用已安装，点击按钮会直接打开应用</li>
+                <li>如果应用未安装，会自动跳转到Google Play商店</li>
+                <li>建议在真实Android设备上测试</li>
+                <li>可以在浏览器开发者工具中查看控制台输出</li>
+            </ul>
+        </div>
+        
+        <h3>调试信息：</h3>
+        <button class="btn" onclick="showDebugInfo()">显示调试信息</button>
+        <div id="debugInfo" style="display: none; margin-top: 20px;">
+            <div class="config" id="debugContent"></div>
+        </div>
+    </div>
+
+    <!-- 引入Deep Link库 -->
+    <script src="js/deeplink.js"></script>
+    
+    <script>
+        function testBasic() {
+            console.log('Testing basic deep link...');
+            window.deepLinkManager.handleDeepLink();
+        }
+        
+        function testTicker() {
+            console.log('Testing ticker deep link...');
+            window.deepLinkManager.handleDeepLink('/ticker');
+        }
+        
+        function testCalculator() {
+            console.log('Testing calculator deep link...');
+            window.deepLinkManager.handleDeepLink('/calculator', 'type=profit&amount=1000');
+        }
+        
+        function testSimulator() {
+            console.log('Testing simulator deep link...');
+            window.deepLinkManager.handleDeepLink('/simulator');
+        }
+        
+        function showDebugInfo() {
+            const debugInfo = document.getElementById('debugInfo');
+            const debugContent = document.getElementById('debugContent');
+            
+            const info = {
+                'Deep Link Manager Options': window.deepLinkManager.options,
+                'Platform Detection': {
+                    'isAndroid': window.deepLinkManager.isAndroid,
+                    'isIOS': window.deepLinkManager.isIOS,
+                    'isInApp': window.deepLinkManager.isInApp
+                },
+                'Current URL': window.location.href,
+                'User Agent': navigator.userAgent
+            };
+            
+            debugContent.innerHTML = '<pre>' + JSON.stringify(info, null, 2) + '</pre>';
+            debugInfo.style.display = 'block';
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('VpropTrader Deep Link Test Page Loaded');
+            console.log('Deep Link Manager:', window.deepLinkManager);
+        });
+    </script>
+</body>
+</html>
