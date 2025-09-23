@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Open App VPropTrader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { text-align: center; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; background-color: #4285F4; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #3267D6; }
+    </style>
+</head>
+<body>
+    <button onclick="openApp()">Open VPropTrader</button>
+    <script>
+        function openApp() {
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+
+            const androidScheme = 'vproptrader://open';
+            const iosScheme = 'vproptrader://open';
+
+            const iosDownload = 'https://apps.apple.com/app/id6749660179';
+            const androidDownload = 'https://play.google.com/store/apps/details?id=com.proptr.proptrader.android';
+            const fallbackUrl = 'https://vproptrader.com';
+          
+            // 使用 Scheme
+            if (isAndroid) {
+                window.location.href = androidScheme;
+            } else if (isIOS) {
+                window.location.href = iosScheme;
+            }
+
+            // 2秒后检测是否成功，若未跳转则去下载页面
+            setTimeout(() => {
+                if (document.hidden) return;
+                if (isIOS) {
+                    window.location.href = iosDownload;
+                } else if (isAndroid) {
+                    window.location.href = androidDownload;
+                } else {
+                    window.location.href = fallbackUrl;
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
